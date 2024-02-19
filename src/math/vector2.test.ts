@@ -181,7 +181,29 @@ describe("Vector2", () => {
 
             });
 
-            it.todo("Should lerp 'backwards'");
+            it("Should lerp 'backwards'", () => {
+                const lerp1 = Vector2.lerp(to, from, 0);
+                const lerp2 = Vector2.lerp(to, from, 1);
+                const lerp3 = Vector2.lerp(to, from, 0.5);
+
+                expect(lerp1).toEqual(to);
+                expect(lerp2).toEqual(from);
+                expect(lerp3).toEqual(Vector2.one.multiply(0.5));
+            });
+            
+            describe("Lerp with time reference", () => {
+                it("Should lerp correctly", () => {
+                    const duration = 2000;
+
+                    const lerp1 = Vector2.lerpOverTime(from, to, duration, 0);
+                    const lerp2 = Vector2.lerpOverTime(from, to, duration, 1500);
+                    const lerp3 = Vector2.lerpOverTime(from, to, duration, duration);
+
+                    expect(lerp1).toEqual(from);
+                    expect(lerp2).toEqual(to.clone().multiply(0.75));
+                    expect(lerp3).toEqual(to);
+                });
+            });
         });
     });
 });

@@ -44,6 +44,12 @@ export class Vector2 {
         return end.subtract(start).multiply(time).add(start);
     }
 
+    public static lerpOverTime(start: Vector2, end: Vector2, duration: number, currentDuration: number) {
+        const normalizedTime = currentDuration / duration;
+
+        return this.lerp(start, end, normalizedTime);
+    }
+
     public add(number: number): this;
     public add(vector: Vector2): this;
     public add(value: unknown) {

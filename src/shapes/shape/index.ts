@@ -42,28 +42,18 @@ export class Shape {
         }
     }
 
-    public * moveTo(position: Vector2, duration: number) {
-        for (let i = 0.0; i < 1.0; i += Time.deltaTime / 1000) {
-            const temp = Vector2.lerp(new Vector2(this._x, this._y), position, i);
+    public * moveTo(position: Vector2, duration: number = 1000) {
+        for (let i = 0; i < duration; i += Time.deltaTime) {
+            const temp = Vector2.lerpOverTime(new Vector2(this._x, this._y), position, duration, i);
+
             this.shape!.x(temp.x);
             this.shape!.y(temp.y);
             yield;
         }
+
+        this._x = position.x;
+        this._y = position.y;
         yield;
-        // const duration = 1000;
-        // const startTime = performance.now();
-        // const startX = this._x;
-
-        // if (!this.shape) return;
-
-        // requestAnimationFrame((currentTime) => this.tempAnimate(currentTime, duration, startTime, startX, x));
-        // requestAnimationFrame((currentTime) => lerpCallback({
-        //     currentTime,
-        //     duration,
-        //     startTime,
-        //     startValue: startX,
-        //     value: x
-        // }));
     }
 
     public set x(x: number) {

@@ -53,7 +53,6 @@ export class Shape {
 
         this._x = position.x;
         this._y = position.y;
-        yield;
     }
 
     public set x(x: number) {

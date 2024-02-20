@@ -17,7 +17,30 @@ export class Renderer {
     constructor(scene: Scene) {
         this.stage = new Stage({});
         this.scene = scene;
-        this.play();
+        this.estimateSceneSize(scene).then((frames) => {
+            console.log(frames, `${frames / this.fps} seconds`);
+            // this.play();
+        });
+    }
+
+    private async estimateSceneSize(scene: Scene) {
+        const runner = scene(this.stage);
+        const start = performance.now();
+        let frames = 0;
+        
+        Time.deltaTime = 1000 / this.fps;
+
+        console.log(`Estimating total time...\n
+        Delta time: ${Time.deltaTime}`);
+        
+        while (!runner.next().done) {
+            frames++;
+        }
+
+        console.log(`Finished estimating after ${performance.now() - start}ms
+        \nLooked over ${frames} frames`);
+
+        return frames;
     }
 
     public play() {

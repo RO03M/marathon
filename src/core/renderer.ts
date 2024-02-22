@@ -19,7 +19,7 @@ export class Renderer {
         this.scene = scene;
         this.estimateSceneSize(scene).then((frames) => {
             console.log(frames, `${frames / this.fps} seconds`);
-            // this.play();
+            this.play();
         });
     }
 

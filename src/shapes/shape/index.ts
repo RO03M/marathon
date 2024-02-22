@@ -6,16 +6,18 @@ import { Time } from "../../core/time";
 
 // // Should extend node in the future?
 export class Shape {
-    protected _x: number;
-    protected _y: number;
+    protected _x?: number;
+    protected _y?: number;
+    protected _rotate?: number;
     protected fillColor?: string;
     protected shape?: Konva.Shape;
 
     public konvaLayer?: Konva.Layer;
 
     constructor(props: ShapeProps) {
-        this._x = props.x;
-        this._y = props.y;
+        this.x = props.x;
+        this.y = props.y;
+        this.rotate = props.rotate ?? 0;
         this.fillColor = props.fillColor;
         this.konvaLayer = new Konva.Layer();
     }
@@ -24,76 +26,64 @@ export class Shape {
         return this._x ?? 0;
     }
     
+    public set x(x: number) {
+        this.shape?.x(x);
+        this._x = x;
+    }
+
     public get y() {
         return this._y ?? 0;
     }
-    
-    private tempAnimate(currentTime: number, duration: number, startTime: number, startX: number, toX: number) {
-        const elapsed = currentTime - startTime;
-        const progress = duration === 0 ? 1 : Math.min(elapsed / duration, 1);
 
-        const currentX = startX + (toX - startX) * progress;
+    public set y(y: number) {
+        this.shape?.y(y);
+        this._y = y;
+    }
 
-        this.shape!.x(currentX);
-        this._x = currentX;
-
-        if (progress < 1) {
-            requestAnimationFrame((curr) => this.tempAnimate(curr, duration, startTime, startX, toX));
-        }
+    public get rotate() {
+        return this._rotate ?? 0;
+    }
+  
+    public set rotate(theta: number) {
+        this.shape?.rotate(theta);
+        this._rotate = theta;
     }
 
     public * moveTo(position: Vector2, duration: number = 1000) {
+        const initialVector = new Vector2(this.x, this.y);
         for (let i = 0; i < duration; i += Time.deltaTime) {
-            const temp = Vector2.lerpOverTime(new Vector2(this._x, this._y), position, duration, i);
+            const temp = Vector2.lerpOverTime(initialVector, position, duration, i);
 
-            this.shape!.x(temp.x);
-            this.shape!.y(temp.y);
+            this.x = temp.x;
+            this.y = temp.y;
+            
             yield;
         }
-
-        this._x = position.x;
-        this._y = position.y;
     }
 
-    public set x(x: number) {
-        const duration = 1000;
-        const startTime = performance.now();
-        const startX = this._x;
+    /**
+     * Generic smooth variable change
+     */
+    public * to(props: Partial<ShapeProps>) {
+        const entries: [keyof ShapeProps, any][] = Object.entries(props);
+        for (const entry of entries) {
+            // console.log(entry);
+            const [key, value] = entry;
 
-        if (!this.shape) return;
+            //NEED TO IMPLEMENT MATH LERP, VECTOR2 LERP WONT SERVE
+            // for (let i = 0; i < duration; i += Time.deltaTime) {
+            //     const temp = Vector2.lerpOverTime(initialVector, position, duration, i);
+    
+            //     this.x = temp.x;
+            //     this.y = temp.y;
+                
+            //     yield;
+            // }
 
-        // requestAnimationFrame((currentTime) => this.tempAnimate(currentTime, duration, startTime, startX, x));
-        requestAnimationFrame((currentTime) => lerpCallback({
-            currentTime,
-            duration,
-            startTime,
-            startValue: startX,
-            value: x,
-            callback: (currentValue) => {
-                this.shape!.x(currentValue);
-                this._x = currentValue;
-            }
-        }));
+            console.log(this[key]);
+        }
+        // console.log(entries);
+        // console.log(Object.keys(props));
     }
-
-    public set y(y: number) {
-        const duration = 1000;
-        const startTime = performance.now();
-        const startY = this._y;
-
-        if (!this.shape) return;
-
-        // requestAnimationFrame((currentTime) => this.tempAnimate(currentTime, duration, startTime, startX, x));
-        requestAnimationFrame((currentTime) => lerpCallback({
-            currentTime,
-            duration,
-            startTime,
-            startValue: startY,
-            value: y,
-            callback: (currentValue) => {
-                this.shape!.y(currentValue);
-                this._y = currentValue;
-            }
-        }));
-    }
+    
 }

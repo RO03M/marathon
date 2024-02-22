@@ -13,8 +13,6 @@ export class Circle extends Shape {
         
         this.konvaLayer = new Konva.Layer();
         this.shape = new Konva.Circle({
-            x: this._x,
-            y: this._y,
             radius: this.radius,
             fill: this.fillColor
         });

@@ -1,15 +1,13 @@
 import Konva from "konva";
 import { ShapeProps } from "./types";
-import { lerpCallback } from "./utils";
-import { Vector2 } from "../../math";
+import { Vector2, lerpOverTime } from "../../math";
 import { Time } from "../../core/time";
 
 // // Should extend node in the future?
 export class Shape {
-    protected _x?: number;
-    protected _y?: number;
-    protected _rotate?: number;
-    protected fillColor?: string;
+    protected _x: number = 0;
+    protected _y: number = 0;
+    protected _rotate: number = 0;
     protected shape?: Konva.Shape;
 
     public konvaLayer?: Konva.Layer;
@@ -17,8 +15,8 @@ export class Shape {
     constructor(props: ShapeProps) {
         this.x = props.x;
         this.y = props.y;
+        this.fillColor = props.fillColor ?? "#000000";
         this.rotate = props.rotate ?? 0;
-        this.fillColor = props.fillColor;
         this.konvaLayer = new Konva.Layer();
     }
     
@@ -40,13 +38,36 @@ export class Shape {
         this._y = y;
     }
 
+    public get scaleX() {
+        return this.shape?.getAttr("scale")?.x;
+    }
+
+    public set scaleX(scale: number) {
+        this.shape?.scaleX(scale);
+    }
+    
+    public get scaleY() {
+        return this.shape?.getAttr("scale")?.y;
+    }
+
+    public set scaleY(scale: number) {
+        this.shape?.scaleY(scale);
+    }
+
     public get rotate() {
-        return this._rotate ?? 0;
+        return this.shape?.getAttr("rotate");
     }
   
     public set rotate(theta: number) {
         this.shape?.rotate(theta);
-        this._rotate = theta;
+    }
+
+    public get fillColor() {
+        return this.shape?.getAttr("fill");
+    }
+
+    public set fillColor(fillColor: string) {
+        this.shape?.fill(fillColor);
     }
 
     public * moveTo(position: Vector2, duration: number = 1000) {
@@ -61,29 +82,43 @@ export class Shape {
         }
     }
 
+    private interpolate(from: number, to: number, duration: number, currentDuration: number, propName: keyof ShapeProps) {
+        if (propName === "fillColor") {
+            return "#fff";
+        } else {
+            return lerpOverTime(from, to, duration, currentDuration);
+        }
+    }
+
     /**
      * Generic smooth variable change
      */
-    public * to(props: Partial<ShapeProps>) {
-        const entries: [keyof ShapeProps, any][] = Object.entries(props);
-        for (const entry of entries) {
-            // console.log(entry);
-            const [key, value] = entry;
+    public * to(props: Partial<ShapeProps>, duration: number) {
+        const entries: [keyof ShapeProps, any][] = Object.entries(props) as [keyof ShapeProps, any][];
 
-            //NEED TO IMPLEMENT MATH LERP, VECTOR2 LERP WONT SERVE
-            // for (let i = 0; i < duration; i += Time.deltaTime) {
-            //     const temp = Vector2.lerpOverTime(initialVector, position, duration, i);
+        const initialValues: Partial<Record<keyof ShapeProps, any>> = {};
+        
+        entries.forEach((entry) => {
+            const [ key ] = entry;
+
+            initialValues[key] = this[key];
+        });
+
+        for (let currentDuration = 0; currentDuration < duration; currentDuration += Time.deltaTime) {
+            for (const entry of entries) {
+                // console.log(entry);
+                const [key, value] = entry;
     
-            //     this.x = temp.x;
-            //     this.y = temp.y;
-                
-            //     yield;
-            // }
+                const foo = this[key];
+                // const currentValue = lerpOverTime(initialValues[key], value, duration, currentDuration);
+                const currentValue = lerpOverTime(initialValues[key], value, duration, currentDuration);
+                if (typeof this[key] === typeof currentValue) {
+                    this[key] = currentValue;
+                }
+            }
 
-            console.log(this[key]);
+            yield;
         }
-        // console.log(entries);
-        // console.log(Object.keys(props));
     }
     
 }

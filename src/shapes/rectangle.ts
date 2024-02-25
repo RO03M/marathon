@@ -10,7 +10,11 @@ export class Rectangle extends Shape {
             ...props,
             width: 10,
             height: 10,
-            fill: "blue"
+            fill: "blue",
+            offset: {
+                x: 5,
+                y: 5
+            }
             // cornerRadius
         });
         this.konvaLayer?.add(this.shape);

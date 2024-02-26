@@ -15,7 +15,6 @@ export class Rectangle extends Shape {
                 x: 5,
                 y: 5
             }
-            // cornerRadius
         });
         this.konvaLayer?.add(this.shape);
     }

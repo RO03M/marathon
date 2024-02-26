@@ -1,0 +1,1 @@
+// function that will execute at once all motion function passed to it args

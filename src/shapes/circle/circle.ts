@@ -11,16 +11,11 @@ export class Circle extends Shape {
         
         this.radius = props.radius;
         
-        this.konvaLayer = new Konva.Layer();
+        // this.konvaLayer = new Konva.Layer();
         this.shape = new Konva.Circle({
-            radius: this.radius,
-            fill: this.fillColor
+            ...props,
+            fill: props.fillColor,
         });
-
-        this.konvaLayer.add(this.shape);
-    }
-
-    get _konva() {
-        return this.shape;
+        this.konvaLayer?.add(this.shape);
     }
 }

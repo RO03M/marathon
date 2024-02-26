@@ -5,4 +5,5 @@ export interface ShapeProps {
     scaleY?: number;
     rotate?: number;
     fillColor?: string;
+    cornerRadius?: number;
 }

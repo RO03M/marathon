@@ -70,24 +70,28 @@ export class Shape {
         this.shape?.fill(fillColor);
     }
 
-    public * moveTo(position: Vector2, duration: number = 1000) {
-        const initialVector = new Vector2(this.x, this.y);
-        for (let i = 0; i < duration; i += Time.deltaTime) {
-            const temp = Vector2.lerpOverTime(initialVector, position, duration, i);
-
-            this.x = temp.x;
-            this.y = temp.y;
-            
-            yield;
-        }
+    public get cornerRadius() {
+        return this.shape?.getAttr("cornerRadius");
     }
 
-    private interpolate(from: number, to: number, duration: number, currentDuration: number, propName: keyof ShapeProps) {
-        if (propName === "fillColor") {
-            return "#fff";
-        } else {
-            return lerpOverTime(from, to, duration, currentDuration);
-        }
+    public set cornerRadius(value: number) {
+        this.shape?.setAttr("cornerRadius", value);
+    }
+
+    public * moveTo(position: Vector2, duration: number = 1000) {
+        yield* this.to({
+            x: position.x,
+            y: position.y
+        }, duration);
+        // const initialVector = new Vector2(this.x, this.y);
+        // for (let i = 0; i < duration; i += Time.deltaTime) {
+        //     const temp = Vector2.lerpOverTime(initialVector, position, duration, i);
+
+        //     this.x = temp.x;
+        //     this.y = temp.y;
+            
+        //     yield;
+        // }
     }
 
     /**
@@ -106,12 +110,10 @@ export class Shape {
 
         for (let currentDuration = 0; currentDuration < duration; currentDuration += Time.deltaTime) {
             for (const entry of entries) {
-                // console.log(entry);
                 const [key, value] = entry;
-    
-                const foo = this[key];
-                // const currentValue = lerpOverTime(initialValues[key], value, duration, currentDuration);
+
                 const currentValue = lerpOverTime(initialValues[key], value, duration, currentDuration);
+
                 if (typeof this[key] === typeof currentValue) {
                     this[key] = currentValue;
                 }

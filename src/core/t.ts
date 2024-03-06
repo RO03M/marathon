@@ -1,32 +1,34 @@
 import { Vector2 } from "../math";
 import { Circle } from "../shapes";
 import { Rectangle } from "../shapes/rectangle";
+import { loop } from "./motion/loop";
+import { sleep } from "./motion/sleep";
 import { Stage } from "./stage";
 
 export function* fooScene(stage: Stage) {
-    const circle = new Circle({
-        radius: 10,
-        x: 10,
-        y: 10,
-        fillColor: "red"
+    const center = new Vector2(100, 100);
+
+    const sun = new Circle({
+        radius: 20,
+        ...center,
+        fillColor: "yellow"
     });
 
-    stage.add(circle);
-
-    const rect = new Rectangle({
-        x: 10,
-        y: 30,
+    const earth = new Circle({
+        radius: 6,
+        ...center,
         fillColor: "blue"
     });
 
-    stage.add(rect);
-    yield* rect.to({
-        x: 100,
-        y: 10
-    });
-    yield* circle.moveTo(new Vector2(200, 10), 3500);
-    // yield* circle.moveTo(new Vector2(100, 10), 500);
-    // yield* circle.moveTo(new Vector2(200, 50), 500);
-    // yield* circle.moveTo(new Vector2(300, 10));
-    // circle.moveTo
+    stage.add(sun);
+    stage.add(earth);
+
+    yield* loop(function * (index) {
+        const radians = index * 4 * (Math.PI / 180);
+
+        const x = Math.cos(radians) * 50;
+        const y = Math.sin(radians) * 50;
+        
+        yield* earth.moveTo((new Vector2(x, y)).add(center), 50);
+    }, 1000);
 }

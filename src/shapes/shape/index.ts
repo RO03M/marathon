@@ -83,15 +83,6 @@ export class Shape {
             x: position.x,
             y: position.y
         }, duration);
-        // const initialVector = new Vector2(this.x, this.y);
-        // for (let i = 0; i < duration; i += Time.deltaTime) {
-        //     const temp = Vector2.lerpOverTime(initialVector, position, duration, i);
-
-        //     this.x = temp.x;
-        //     this.y = temp.y;
-            
-        //     yield;
-        // }
     }
 
     /**
@@ -115,7 +106,7 @@ export class Shape {
                 const currentValue = lerpOverTime(initialValues[key], value, duration, currentDuration);
 
                 if (typeof this[key] === typeof currentValue) {
-                    this[key] = currentValue;
+                    this[key] = currentValue as never;//HACK
                 }
             }
 
